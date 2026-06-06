@@ -71,32 +71,7 @@ adb push frida-server /data/local/tmp/
 adb shell chmod +x /data/local/tmp/frida-server
 adb shell /data/local/tmp/frida-server &
 
-🛠️ Environnement et outils
-┌─────────────────────────────────────┐
-│        Machine hôte (Windows)       │
-│                                     │
-│  ┌─────────────┐  ┌──────────────┐  │
-│  │  Burp Suite │  │    Frida     │  │
-│  │  :8080      │  │  CLI 17.9.1  │  │
-│  └──────┬──────┘  └──────┬───────┘  │
-│         │                │          │
-└─────────┼────────────────┼──────────┘
-          │ proxy          │ RPC / inject
-          ▼                ▼
-┌─────────────────────────────────────┐
-│     Android Emulator 5554           │
-│     (id=emulator-5554)              │
-│                                     │
-│  ┌─────────────────────────────┐    │
-│  │   InsecureBankV2            │    │
-│  │   com.android.insecurebankv2│    │
-│  ├─────────────────────────────┤    │
-│  │   OWASP UnCrackable1        │    │
-│  │   owasp.mstg.uncrackable1   │    │
-│  └─────────────────────────────┘    │
-│                                     │
-│  Proxy configuré : 10.0.2.2:8080   │
-└─────────────────────────────────────┘
+
 
 Note : L'IP 10.0.2.2 est l'adresse de la machine hôte vue depuis l'émulateur Android (loopback spécial AVD).
 
@@ -117,18 +92,7 @@ Source : InsecureBankv2 GitHub
 Objectif : Application bancaire volontairement vulnérable, couvrant de nombreuses failles OWASP Mobile Top 10
 
 
-🏗️ Architecture du lab
-LAB 15
-├── Scripts Frida
-│   ├── sslpin_bypass_universal.js   ← Script universel de bypass SSL
-│   └── bypass_pinning.js            ← Script personnalisé (OkHttp / custom)
-│
-├── Applications cibles
-│   ├── owasp.mstg.uncrackable1.apk
-│   └── InsecureBankV2.apk
-│
-└── Proxy
-    └── Burp Suite (listener :8080)
+
 
 🔍 Étapes réalisées
 Étape 1 — Configuration du proxy Burp Suite
@@ -322,25 +286,6 @@ frida CLI
   └── -U          : connexion USB/ADB
   └── -f <pkg>    : spawn (lancement) de l'application
   └── -l <script> : injection du script JS au démarrage
-Architecture TLS sur Android
-Application Layer
-        │
-        ▼
-┌───────────────────┐
-│  OkHttp / Volley  │  ← Couche HTTP cliente
-└────────┬──────────┘
-         │
-┌────────▼──────────┐
-│  SSLContext       │  ← Java SSL API
-│  TrustManager    │  ← Validation des certificats
-└────────┬──────────┘
-         │
-┌────────▼──────────┐
-│  libssl.so        │  ← Bibliothèque native SSL
-│  libcrypto.so     │  ← Cryptographie OpenSSL
-└────────┬──────────┘
-         │
-    Réseau TLS
 
 🚧 Difficultés rencontrées et solutions
 Problème 1 — OkHttp non trouvé
